@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
+<link href="{% static 'dist/css/lightbox.min.css' %}" rel="stylesheet">
+{% endblock css %}
+
+{% block contenido %}
+<div class="container">
+  <div class="col-lg-8 mx-auto p-3 py-md-5">
+    <!--Diseño de titulo-->
+    <div class="d-flex align-items-center pb-3 mb-5 border-bottom">
+      <!--Logo-->
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-laptop"
+        viewBox="0 0 16 16">
+        <path
+          d="M13.5 3a.5.5 0 0 1 .5.5V11H2V3.5a.5.5 0 0 1 .5-.5h11zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11zM0 12.5h16a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5z" />
+      </svg>
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z"
+        fill="currentColor">
+      </path>
+      <!--Descripcion titulo-->
+      <span class="fs-2">&nbsp;Modificar una obra.</span>
+    </div>
+
+    <!--Formulario de ingreso obra-->
+    <form action="{% url 'MOD' %}" method="post" onsubmit="return prueba()" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="row">
+        <!--Ingresar nombre obra-->
+        <div class="col">
+          <label for="txtNombreObra" class="form-label mb-3">Nombre de la obra.<small class="text-muted"> (Requerido)</small></label>
+          <input type="text" class="form-control input-group input-group-sm mb-3" id="txtNombreObra"
+            name="txtNombreObra" required minlength="2" maxlength="60"
+            title="Ingrese solo letras entre 2 a 60 caracteres" placeholder="Ingrese nombre para la obra."
+            value="{{obras.nombreObra}}">
+        </div>
+        <!--Ingresar tecnica usada-->
+        <div class="col">
+          <label for="cboTecnicaUsada" class="form-label mb-3">Técnica utilizada.</label>
+          <select class="form-select mb-3" id="cboTecnicaUsada" name="cboTecnicaUsada">
+            {% for reg in tecnicas %}
+            {% if reg.nombre_tecnica == obras.tecnica.nombre_tecnica %}
+            <option selected value="{{reg.nombre_tecnica}}">{{reg.nombre_tecnica}}</option>
+            {% else %}
+            <option value="{{reg.nombre_tecnica}}">{{reg.nombre_tecnica}}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!--Subir imagen-->
+      <label for="txtObra" class="form-label mb-3">Foto de la obra.<small class="text-muted"> (Opcional)</small></label>
+      <input type="file" class="form-control input-group mb-3" id="txtObra" name="txtObra">
+      <p class="mb-3">Foto actual: <a href="{{obras.imagen.url}}" data-lightbox="obras">{{obras.imagen.url}}</a></p>
+
+      <!--Descripcion de la obra-->
+      <label for="txtDescripcion" class="form-label mb-3">Descripción de la obra.<small class="text-muted"> (Opcional)</small></label>
+      <textarea class="form-control input-group input-group-sm mb-3" id="txtDescripcion" name="txtDescripcion" rows="3"
+        maxlength="500" title="Ingrese una descripción para la obra. (máximo 500 caracteres)"
+        placeholder="Ingrese una descripción para la obra. (máximo 500 caracteres)">{{obras.descripcion}}</textarea>
+
+      <!--Historia de la obra-->
+      <label for="txtHistoria" class="form-label mb-3">Historia de la obra.<small class="text-muted"> (Opcional)</small></label>
+      <textarea class="form-control input-group input-group-sm mb-3" id="txtHistoria" name="txtHistoria" rows="3"
+        maxlength="500" title="Ingrese una historia para la obra. (máximo 500 caracteres)"
+        placeholder="Ingrese una historia para la obra. (máximo 500 caracteres)">{{obras.historia}}</textarea>
+
+      <!--Valor de la obra-->
+      <label for="txtValor" class="form-label mb-3">Valor de la obra.<small class="text-muted"> (Opcional)</small></label>
+      <div class="input-group mb-3">
+        <span class="input-group-text mb-3">$ (USD)</span>
+        <input type="text" class="form-control mb-3" id="txtValor" name="txtValor"
+          placeholder="Ingrese el valor de la obra en dólar. Ej. 19.99" required minlength="2" pattern="[0-9.]{2,20}"
+          title="Solo se permite números entre 2 a 20 cifras además de un punto." value="{{obras.valor}}">
+      </div>
+
+      <!--Boton enviar-->
+      <br><br>
+      <button type="submit" class="btn btn-primary d-grid gap-2 col-6 mx-auto">Enviar</button>
+    </form>
+  </div>
+</div>
+
+
+{% endblock contenido %}
+
+{% block js %}
+<script src="{% static 'js/scripts.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'dist/js/lightbox-plus-jquery.min.js' %}"></script>
+{% endblock js %}

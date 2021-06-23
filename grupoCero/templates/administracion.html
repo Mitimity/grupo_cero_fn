@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link href="{% static 'dist/css/lightbox.min.css' %}" rel="stylesheet">
+<script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
+{% endblock css %}
+
+{% block contenido %}
+<div class="container">
+  <div class="col-lg-8 mx-auto p-3 py-md-5">
+    <!--Diseño de titulo-->
+    <div class="d-flex align-items-center pb-3 mb-5 border-bottom">
+      <!--Logo-->
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-palette"
+        viewBox="0 0 16 16">
+        <path
+          d="M8 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm4 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+        <path
+          d="M16 8c0 3.15-1.866 2.585-3.567 2.07C11.42 9.763 10.465 9.473 10 10c-.603.683-.475 1.819-.351 2.92C9.826 14.495 9.996 16 8 16a8 8 0 1 1 8-8zm-8 7c.611 0 .654-.171.655-.176.078-.146.124-.464.07-1.119-.014-.168-.037-.37-.061-.591-.052-.464-.112-1.005-.118-1.462-.01-.707.083-1.61.704-2.314.369-.417.845-.578 1.272-.618.404-.038.812.026 1.16.104.343.077.702.186 1.025.284l.028.008c.346.105.658.199.953.266.653.148.904.083.991.024C14.717 9.38 15 9.161 15 8a7 7 0 1 0-7 7z" />
+      </svg>
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z"
+        fill="currentColor">
+      </path>
+      <!--Descripcion titulo-->
+      <span class="fs-4">&nbsp;Publicar una nueva obra.</span>
+    </div>
+    <!--Formulario de ingreso obra-->
+    <form action="{% url 'ADM' %}" method="post" onsubmit="return validarFormObra()" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="row">
+        <!--Ingresar nombre obra-->
+        <div class="col">
+          <label for="txtNombreObra" class="form-label mb-3">Nombre de la obra.<small class="text-muted">
+              (Requerido)</small></label>
+          <input type="text" class="form-control input-group input-group-sm mb-3" id="txtNombreObra"
+            name="txtNombreObra" required minlength="2" maxlength="60"
+            title="Ingrese solo letras entre 2 a 60 caracteres" placeholder="Ingrese nombre para la obra.">
+        </div>
+        <!--Ingresar tecnica usada-->
+        <div class="col">
+          <label for="cboTecnicaUsada" class="form-label mb-3">Técnica utilizada.<small class="text-muted">
+              (Requerido)</small></label>
+          <select class="form-select mb-3" id="cboTecnicaUsada" name="cboTecnicaUsada">
+            {% for reg in tecnicas %}
+            <option value="{{reg.nombre_tecnica}}">{{reg.nombre_tecnica}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!--Subir imagen-->
+      <label for="txtObra" class="form-label mb-3">Foto de la obra. <small class="text-muted">
+          (Opcional)</small></label>
+      <input type="file" class="form-control input-group mb-3" id="txtObra" name="txtObra">
+
+      <!--Descripcion de la obra-->
+      <label for="txtDescripcion" class="form-label mb-3">Descripción de la obra.<small class="text-muted">
+          (Opcional)</small></label>
+      <textarea class="form-control input-group input-group-sm mb-3" id="txtDescripcion" name="txtDescripcion" rows="3"
+        maxlength="500" title="Ingrese una descripción para la obra. (máximo 500 caracteres)"
+        placeholder="Ingrese una descripción para la obra. (máximo 500 caracteres)"></textarea>
+
+      <!--Historia de la obra-->
+      <label for="txtHistoria" class="form-label mb-3">Historia de la obra.<small class="text-muted">
+          (Opcional)</small></label>
+      <textarea class="form-control input-group input-group-sm mb-3" id="txtHistoria" name="txtHistoria" rows="3"
+        maxlength="500" title="Ingrese una historia para la obra. (máximo 500 caracteres)"
+        placeholder="Ingrese una historia para la obra. (máximo 500 caracteres)"></textarea>
+
+      <!--Valor de la obra-->
+      <label for="txtValor" class="form-label mb-3">Valor de la obra.<small class="text-muted">
+          (Opcional)</small></label>
+      <div class="input-group mb-3">
+        <span class="input-group-text mb-3">$ (USD)</span>
+        <input type="text" class="form-control mb-3" id="txtValor" name="txtValor"
+          placeholder="Ingrese el valor de la obra en dólar. Ej. 19.99" required minlength="2" pattern="[0-9.]{2,20}"
+          title="Solo se permite números entre 2 a 20 cifras además de un punto.">
+      </div>
+
+      <!--Boton enviar-->
+      <br><br>
+      <button type="submit" class="btn btn-primary d-grid gap-2 col-4 mx-auto">Enviar</button>
+    </form>
+  </div>
+</div>
+
+{% if cobr == 0 %}
+{% else %}
+<!--Titulo-->
+<div class="container col-lg-12 mx-auto p-3 py-md-5">
+  <div class="d-flex align-items-center pb-3 mb-5 border-bottom">
+    <!--Logo-->
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-laptop"
+      viewBox="0 0 16 16">
+      <path
+        d="M13.5 3a.5.5 0 0 1 .5.5V11H2V3.5a.5.5 0 0 1 .5-.5h11zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11zM0 12.5h16a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5z" />
+    </svg>
+    <path fill-rule="evenodd" clip-rule="evenodd"
+      d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z"
+      fill="currentColor">
+    </path>
+    <!--Descripcion titulo-->
+    <span class="fs-4">&nbsp;Administración de mis obras.<small class="text-muted"> Obras publicadas: {{ cobr }}</small></span>
+  </div>
+  
+  <!--Tabla de datos-->
+  <div class="container table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Imagen</th>
+          <th scope="col">Nombre de obra</th>
+          <th scope="col">Técnica</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Historia</th>
+          <th scope="col">Valor</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Comentario</th>
+          <th scope="col">Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reg in obras %}
+        <tr scope="row">
+          <td><img src="{{reg.imagen.url}}" height="100px" width="auto" alt=""></td>
+          <td>{{reg.nombreObra}}</td>
+          <td>{{reg.tecnica}}</td>
+          <td>{{reg.descripcion}}</td>
+          <td>{{reg.historia}}</td>
+          <td>${{reg.valor}}</td>
+          <td>
+            {% if reg.publicar %}
+            <div><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-check-lg" viewBox="0 0 16 16">
+                <path
+                  d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.04L.431 8.138a1.473 1.473 0 0 1 2.084-2.083l4.111 4.112 6.82-8.69a.486.486 0 0 1 .04-.045z" />
+              </svg><br>Publicada</div>
+            {% else %}
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg"
+                viewBox="0 0 16 16">
+                <path
+                  d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z" />
+              </svg><br>No publicada</div>
+            {% endif %}
+          </td>
+          <td>{{reg.comentario}}</td>
+          <td>
+            <div class="d-flex btn form-control">
+              <button class="btn btn-warning me-1" onclick="modificar('{{reg.nombreObra}}','{{reg.id_obra}}')">Modificar</button>
+              <button class="btn btn-danger me-1" onclick="eliminar('{{reg.nombreObra}}','{{reg.id_obra}}')">Eliminar</button>
+              <button class="btn btn-primary me-1" onclick="galeria('{{reg.nombreObra}}')" data-bs-toggle="modal"
+                data-bs-target="#exampleModal">Agregar imagen</button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Añadir imagen a la galería.</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{% url 'INSGAL' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+
+          <p>Se agregará una imagen a la obra: </p>
+          <div id="nombre_obra"></div>
+
+          <input type="file" name="txtImgGal" id="txtImgGal">
+          <input type="hidden" name="txtObraGal" id="txtObraGal">
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function eliminar(nombreObra,id) {
+    Swal.fire({
+      title: 'Desea eliminar la obra "' + nombreObra + '"?',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar'
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        location.href = '/eliminar_obra/' + id + '/';
+      }
+    })
+  }
+  function modificar(nombreObra,id) {
+    location.href = '/modificar_obra/' + id + '/';
+  }
+  function galeria(nombreObra) {
+    document.getElementById("nombre_obra").innerHTML = nombreObra;
+    document.getElementById("txtObraGal").value = nombreObra;
+  }
+</script>
+
+{% if mensaje != '0' %}
+<script>
+  Swal.fire({
+    icon: '{{icono}}',
+    title: '{{mensaje}}',
+  })
+</script>
+{% endif %}
+
+{% endblock contenido %}
+
+{% block js %}
+<script src="{% static 'js/scripts.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'dist/js/lightbox-plus-jquery.min.js' %}"></script>
+{% endblock js %}

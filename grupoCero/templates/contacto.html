@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
+
+{% endblock css %}
+
+{% block contenido %}
+<div class="container">
+  <div class="col-lg-8 mx-auto p-3 py-md-5">
+
+    <!--Contenedor de titulo-->
+    <div class="d-flex align-items-center pb-3 mb-5 border-bottom">
+
+      <!--Logo de titulo-->
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+        class="bi bi-chat-square-text-fill" viewBox="0 0 16 16">
+        <path
+          d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2V2zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5z" />
+      </svg>
+
+      <!--Descripcion de titulo-->
+      <span class="fs-4">&nbsp;Contacto general</span>
+    </div>
+
+    <!--Formulario de contacto-->
+    <form action="{% url 'CONT' %}" method="post" onsubmit="return validarFormContacto()">
+      {% csrf_token %}
+
+      <!--Ingreso de correo electronico-->
+      <div class="mb-3">
+        <label for="txtCorreo" class="form-label">Correo electrónico</label>
+        <input type="email" class="form-control" id="txtCorreo" name="txtCorreo" placeholder="nombre@ejemplo.com"
+          required minlength="5">
+      </div>
+
+      <!--Ingreso de consulta-->
+      <div class="mb-3">
+        <label for="txtComentario" class="form-label">Consulta</label>
+        <textarea type="text" class="form-control" id="txtComentario" name="txtComentario" rows="3" required
+          minlength="6" placeholder="Ingrese consulta o comentario."></textarea>
+      </div>
+
+      <!--Boton enviar-->
+      <button type="submit" class="btn btn-primary">Enviar comentario</button>
+
+    </form>
+
+  </div>
+</div>
+
+{% if mensaje != '0' %}
+<script>
+  Swal.fire({
+    icon: '{{icono}}',
+    title: '{{mensaje}}',
+  })
+</script>
+{% endif %}
+{% endblock contenido %}
+
+{% block js %}
+<script src="{% static 'js/scripts.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+{% endblock js %}

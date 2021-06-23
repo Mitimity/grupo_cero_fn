@@ -1,0 +1,199 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grupo cero</title>
+  {% block css %}
+
+  {% endblock css %}
+
+  {% load pwa %}
+  {% progressive_web_app_meta %}
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyBo8UAFK58gww_RqPiQGTMWwTCoxSqmJ40",
+      authDomain: "djangosec002-28183.firebaseapp.com",
+      projectId: "djangosec002-28183",
+      storageBucket: "djangosec002-28183.appspot.com",
+      messagingSenderId: "61778552818",
+      appId: "1:61778552818:web:7b7ae281aff9bacab5ad6b"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    let messaging = firebase.messaging();
+
+    navigator.serviceWorker
+      .register('serviceworker.js')
+      .then(function (register) {
+        messaging.useServiceWorker(register);
+        // solicitar autorizacion para notificaciones
+        messaging.requestPermission()
+          .then(function () {
+            console.log("el usuario acepto notificaciones")
+            /// generamos un token
+            return messaging.getToken();
+          })
+          .then(function (token) {
+            // mostrar el token
+            console.log(token)
+            /////////////// enviar el token a un metodo en la view /////////////////////
+            fetch('guardar-token/', {
+              method: 'post',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                'token': token
+              })
+            })
+            ////////////////////////////////////////////////////////////////////////////
+
+          })
+          .catch(function (e) {
+            console.log("el usuario no acepto las notificaciones")
+          })
+      })
+
+    //// modelo de notificacion ///////////////////////////////
+    messaging.onMessage(function (payload) {
+      let titulo=payload.notification.title
+        let opciones = {
+            body: payload.notification.body,
+            icon: payload.notification.icon
+        }
+      let mensaje = new Notification(titulo, opciones)
+    })
+    ///////////////////////////////////////////////////////////
+
+  </script>
+</head>
+
+{% block tam %}
+
+{% endblock tam %}
+
+<body>
+  <!--Barra de navegacionfixed-top-->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <!-- logo -->
+        <img class="navbar-brand" src="{% static 'img/t25444.png' %}" width="auto" height="50" alt="">
+        <a class="navbar-brand">Grupo cero</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu_principal"
+          aria-controls="menu_principal" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menu_principal">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+            <!--Inicio-->
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="{% url 'IND' %}"><svg xmlns="http://www.w3.org/2000/svg"
+                  width="16" height="16" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+                  <path
+                    d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z" />
+                </svg>&nbsp;Inicio</a>
+            </li>
+
+            <!--Contacto-->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'CONT' %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                  <path
+                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z" />
+                </svg>&nbsp;Contáctenos</a>
+            </li>
+            <!--Api-->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'API' %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal" viewBox="0 0 16 16">
+                    <path d="M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.854 4.146a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z"/>
+                    <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h12z"/>
+                  </svg>
+                  </svg>&nbsp;Api</a>
+            </li>
+
+            {% if user.is_authenticated %}
+            <!--Ingresar obra-->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'ADM' %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-palette" viewBox="0 0 16 16">
+                  <path
+                    d="M8 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm4 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                  <path
+                    d="M16 8c0 3.15-1.866 2.585-3.567 2.07C11.42 9.763 10.465 9.473 10 10c-.603.683-.475 1.819-.351 2.92C9.826 14.495 9.996 16 8 16a8 8 0 1 1 8-8zm-8 7c.611 0 .654-.171.655-.176.078-.146.124-.464.07-1.119-.014-.168-.037-.37-.061-.591-.052-.464-.112-1.005-.118-1.462-.01-.707.083-1.61.704-2.314.369-.417.845-.578 1.272-.618.404-.038.812.026 1.16.104.343.077.702.186 1.025.284l.028.008c.346.105.658.199.953.266.653.148.904.083.991.024C14.717 9.38 15 9.161 15 8a7 7 0 1 0-7 7z" />
+                </svg>&nbsp;Mis obras</a>
+            </li>
+
+            <!--Mi cuenta autentificada-->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                </svg>&nbsp;{{user.username}}</a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'PERFIL' %}">Mi perfil</a></li>
+                <li><a class="dropdown-item" href="{% url 'CERRAR' %}">Cerrar sesión</a></li>
+              </ul>
+            </li>
+            {% else %}
+            <!--Mi cuenta-->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                </svg>&nbsp;Mi cuenta</a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'INI' %}">Iniciar sesión</a></li>
+                <li><a class="dropdown-item" href="{% url 'CRE' %}">Crear cuenta</a></li>
+              </ul>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Region de contenido -->
+  <main>
+    {% block contenido %}
+
+    {% endblock contenido %}
+  </main>
+
+  <!--Pie de pagina-->
+  <footer class="my-5 pt-5 text-muted text-center text-small">
+    <p class="mb-1">&copy; 2021 Programación Web~002</p>
+  </footer>
+  <!--Scripts-->
+  {% block js %}
+
+  {% endblock js %}
+
+</body>
+
+</html>
